@@ -4,6 +4,7 @@ import styles from "../../../styles/RemoveDoctors.module.css";
 import { Doctor } from "./type";
 import SuccessModal from "@/app/components/SuccessModal";
 import { FaSpinner } from "react-icons/fa";
+import { redirect, useRouter } from "next/navigation";
 
 const RemoveDoctors = () => {
   const [doctors, setDoctors] = useState<Doctor[]>([]);
@@ -11,6 +12,7 @@ const RemoveDoctors = () => {
   const [error, setError] = useState<string | null>(null);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [removingDoctorId, setRemovingDoctorId] = useState<string | null>(null);
+  const router = useRouter();
 
   const fetchDoctors = async () => {
     try {
@@ -21,10 +23,10 @@ const RemoveDoctors = () => {
       const doctorsData = await response.json();
       //   console.log("doctorsData--->", doctorsData);
 
-      // Fetch slots for each doctor and update their status
+      // To Fetch slots for each doctor and update their status
       const doctorsWithStatus = await Promise.all(
         doctorsData.doctors.map(async (doctor: Doctor) => {
-        //   console.log("doctor--->", doctor);
+          //   console.log("doctor--->", doctor);
           try {
             const slotsResponse = await fetch(
               `http://localhost:5000/api/slots/${doctor.doctor_id}`
@@ -82,11 +84,12 @@ const RemoveDoctors = () => {
       console.log("data--->", data);
 
       setShowSuccessModal(true);
-      
+
       // Wait for 3 seconds before updating the UI
       setTimeout(() => {
         setDoctors(doctors.filter((doctor) => doctor.id !== id));
         setRemovingDoctorId(null);
+        location.reload();
       }, 3000);
     } catch (error) {
       setError("Failed to delete doctor");
@@ -111,6 +114,11 @@ const RemoveDoctors = () => {
     );
   }
 
+  const handleEdit = (doctor_id: string) => {
+    redirect(`/dashboard/admin/editDoctor/${doctor_id}`);
+  };
+
+  //   console.log("doctors--->", doctors[0].doctor_id);
   return (
     <div className={styles.container}>
       <h1 className={styles.title}>Manage Doctors</h1>
@@ -136,11 +144,20 @@ const RemoveDoctors = () => {
                     {doctor.status}
                   </span>
                 </td>
-                <td>
+                <td
+                  style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    gap: "1rem",
+                  }}
+                >
                   <button
                     onClick={() => handleRemove(doctor.doctor_id)}
                     className={`${styles.removeButton} ${
-                      removingDoctorId === doctor.doctor_id ? styles.removing : ""
+                      removingDoctorId === doctor.doctor_id
+                        ? styles.removing
+                        : ""
                     }`}
                     disabled={removingDoctorId === doctor.doctor_id}
                   >
@@ -149,6 +166,12 @@ const RemoveDoctors = () => {
                     ) : (
                       "Remove"
                     )}
+                  </button>
+                  <button
+                    className={styles.editButton}
+                    onClick={() => handleEdit(doctor.doctor_id)}
+                  >
+                    Edit Details
                   </button>
                 </td>
               </tr>

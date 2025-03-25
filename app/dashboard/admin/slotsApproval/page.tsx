@@ -1,27 +1,10 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import styles from "../../../styles/SlotsApproval.module.css";
-import { TimeSlot } from "./type";
+import { TimeSlot, Appointment, Doctor } from "./type";
 import { useAuth } from "@/app/utils/context/Authcontext";
 import SuccessModal from "@/app/components/SuccessModal";
 import { FaSpinner } from "react-icons/fa";
-
-interface Appointment {
-  id: number;
-  appointment_id: string;
-  doctor_id: string;
-  status: string;
-  appointment_date: string;
-  appointment_time: string;
-  patient_name: string | null;
-}
-
-interface Doctor {
-  doctor: {
-    id: string;
-    name: string;
-  };
-}
 
 const SlotsApproval = () => {
   const [slots, setSlots] = useState<TimeSlot[]>([]);
@@ -43,7 +26,6 @@ const SlotsApproval = () => {
         }
         const appointments: Appointment[] = await appointmentsResponse.json();
 
-        // Fetch doctor details for each appointment
         const slotsWithDoctorDetails = await Promise.all(
           appointments.map(async (appointment) => {
             const doctorResponse = await fetch(
@@ -58,8 +40,6 @@ const SlotsApproval = () => {
             const formattedDate = new Date(appointment.appointment_date)
               .toISOString()
               .split("T")[0];
-
-            console.log("doctor--->", doctor);
 
             return {
               id: appointment.appointment_id,
@@ -117,21 +97,18 @@ const SlotsApproval = () => {
 
       const data = await response.json();
 
-      // Update local state
       setSlots(
         slots.map((slot) =>
           slot.id === id ? { ...slot, status: newStatus } : slot
         )
       );
 
-      // Show success message
       setSuccessMessage(
         `Appointment ${
           newStatus === "confirmed" ? "approved" : "rejected"
         } successfully`
       );
 
-      // Wait for 3 seconds before clearing the loading state
       setTimeout(() => {
         setActionLoading(null);
       }, 3000);
