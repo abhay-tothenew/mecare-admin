@@ -1,0 +1,208 @@
+.container {
+    max-width: 1200px;
+    margin: 2rem auto;
+    padding: 0 1rem;
+  }
+  
+  .title {
+    font-size: 2rem;
+    color: #333;
+    margin-bottom: 2rem;
+    text-align: center;
+  }
+  
+  .slotsContainer {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1.5rem;
+    padding: 1rem;
+  }
+  
+  .slotCard {
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    padding: 1.5rem;
+    transition: transform 0.2s;
+  }
+  
+  .slotCard:hover {
+    transform: translateY(-2px);
+  }
+  
+  .slotHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid #eee;
+  }
+  
+  .slotHeader h3 {
+    margin: 0;
+    color: #333;
+    font-size: 1.25rem;
+  }
+  
+  .time {
+    font-weight: 500;
+    color: #666;
+  }
+  
+  .slotDetails {
+    margin-bottom: 1rem;
+  }
+  
+  .slotDetails p {
+    margin: 0.5rem 0;
+    color: #555;
+  }
+  
+  .slotStatus {
+    margin-bottom: 1rem;
+  }
+  
+  .status {
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.875rem;
+    font-weight: 500;
+  }
+  
+  .pending {
+    background-color: #fef3c7;
+    color: #92400e;
+  }
+  
+  .confirmed {
+    background-color: #e3fcef;
+    color: #0a7b3e;
+  }
+  
+  .cancelled {
+    background-color: #fee2e2;
+    color: #991b1b;
+  }
+  
+  .slotActions {
+    display: flex;
+    gap: 0.5rem;
+  }
+  
+  .actionButton {
+    flex: 1;
+    padding: 0.5rem;
+    border: none;
+    border-radius: 4px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+  }
+  
+  .actionButton:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+  
+  .approveButton {
+    background-color: #10b981;
+    color: white;
+  }
+  
+  .approveButton:hover:not(:disabled) {
+    background-color: #059669;
+  }
+  
+  .rejectButton {
+    background-color: #ef4444;
+    color: white;
+  }
+  
+  .rejectButton:hover:not(:disabled) {
+    background-color: #dc2626;
+  }
+
+  .loadingContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 400px;
+    gap: 1rem;
+  }
+
+  .spinner {
+    font-size: 2rem;
+    color: #10b981;
+    animation: spin 1s linear infinite;
+  }
+
+  .buttonSpinner {
+    font-size: 1rem;
+    animation: spin 1s linear infinite;
+  }
+
+  .errorContainer {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 400px;
+  }
+
+  .errorMessage {
+    color: #ef4444;
+    font-size: 1.25rem;
+    text-align: center;
+  }
+
+  .processing {
+    opacity: 0.7;
+  }
+  
+  @keyframes spin {
+    from {
+      transform: rotate(0deg);
+    }
+    to {
+      transform: rotate(360deg);
+    }
+  }
+  
+  @media (max-width: 768px) {
+    .container {
+      margin: 1rem auto;
+    }
+  
+    .title {
+      font-size: 1.5rem;
+    }
+  
+    .slotsContainer {
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      gap: 1rem;
+    }
+  
+    .slotCard {
+      padding: 1rem;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .slotsContainer {
+      grid-template-columns: 1fr;
+    }
+  
+    .slotActions {
+      flex-direction: column;
+    }
+  
+    .actionButton {
+      padding: 0.75rem;
+    }
+  } 

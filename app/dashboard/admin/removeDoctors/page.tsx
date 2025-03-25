@@ -1,0 +1,169 @@
+"use client";
+import React, { useState, useEffect } from "react";
+import styles from "../../../styles/RemoveDoctors.module.css";
+import { Doctor } from "./type";
+import SuccessModal from "@/app/components/SuccessModal";
+import { FaSpinner } from "react-icons/fa";
+
+const RemoveDoctors = () => {
+  const [doctors, setDoctors] = useState<Doctor[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [removingDoctorId, setRemovingDoctorId] = useState<string | null>(null);
+
+  const fetchDoctors = async () => {
+    try {
+      const response = await fetch("http://localhost:5000/api/doctors");
+      if (!response.ok) {
+        throw new Error("Failed to fetch doctors");
+      }
+      const doctorsData = await response.json();
+      //   console.log("doctorsData--->", doctorsData);
+
+      // Fetch slots for each doctor and update their status
+      const doctorsWithStatus = await Promise.all(
+        doctorsData.doctors.map(async (doctor: Doctor) => {
+        //   console.log("doctor--->", doctor);
+          try {
+            const slotsResponse = await fetch(
+              `http://localhost:5000/api/slots/${doctor.doctor_id}`
+            );
+
+            const slots = await slotsResponse.json();
+            // console.log("slots--->", slots);
+
+            if (!slots.success) {
+              throw new Error("Failed to fetch slots");
+            }
+            return {
+              ...doctor,
+              status: slots.slots.length > 0 ? "active" : "inactive",
+            };
+          } catch (error) {
+            console.error(
+              `Error fetching slots for doctor ${doctor.id}:`,
+              error
+            );
+            return {
+              ...doctor,
+              status: "inactive",
+            };
+          }
+        })
+      );
+
+      setDoctors(doctorsWithStatus);
+      setLoading(false);
+    } catch (error) {
+      setError("Failed to fetch doctors");
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchDoctors();
+  }, []);
+
+  const handleRemove = async (id: string) => {
+    setRemovingDoctorId(id);
+    try {
+      const response = await fetch(`http://localhost:5000/api/doctors/${id}`, {
+        method: "DELETE",
+      });
+
+      console.log("response--->", response);
+
+      if (!response.ok) {
+        throw new Error("Failed to delete doctor");
+      }
+
+      const data = await response.json();
+      console.log("data--->", data);
+
+      setShowSuccessModal(true);
+      
+      // Wait for 3 seconds before updating the UI
+      setTimeout(() => {
+        setDoctors(doctors.filter((doctor) => doctor.id !== id));
+        setRemovingDoctorId(null);
+      }, 3000);
+    } catch (error) {
+      setError("Failed to delete doctor");
+      setRemovingDoctorId(null);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className={styles.loadingContainer}>
+        <FaSpinner className={styles.spinner} />
+        <p>Loading doctors...</p>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className={styles.errorContainer}>
+        <p className={styles.errorMessage}>{error}</p>
+      </div>
+    );
+  }
+
+  return (
+    <div className={styles.container}>
+      <h1 className={styles.title}>Manage Doctors</h1>
+      <div className={styles.tableContainer}>
+        <table className={styles.table}>
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Specialization</th>
+              <th>Email</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {doctors.map((doctor) => (
+              <tr key={doctor.id}>
+                <td>{doctor.name}</td>
+                <td>{doctor.specialization}</td>
+                <td>{doctor.email}</td>
+                <td>
+                  <span className={`${styles.status} ${styles[doctor.status]}`}>
+                    {doctor.status}
+                  </span>
+                </td>
+                <td>
+                  <button
+                    onClick={() => handleRemove(doctor.doctor_id)}
+                    className={`${styles.removeButton} ${
+                      removingDoctorId === doctor.doctor_id ? styles.removing : ""
+                    }`}
+                    disabled={removingDoctorId === doctor.doctor_id}
+                  >
+                    {removingDoctorId === doctor.doctor_id ? (
+                      <FaSpinner className={styles.buttonSpinner} />
+                    ) : (
+                      "Remove"
+                    )}
+                  </button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      {showSuccessModal && (
+        <SuccessModal
+          message="Doctor removed successfully!"
+          onClose={() => setShowSuccessModal(false)}
+        />
+      )}
+    </div>
+  );
+};
+
+export default RemoveDoctors;
