@@ -1,63 +1,153 @@
-'use client';
+"use client";
+import React, { useState, useEffect } from "react";
+import styles from "@/app/styles/Dashboard.module.css";
+import { FaSpinner, FaUserMd, FaCalendarCheck, FaCalendarTimes } from "react-icons/fa";
 
-import styles from '../../styles/Dashboard.module.css';
-import { FaUserMd, FaUserMinus, FaCheckCircle } from 'react-icons/fa';
-import { useAuth } from '../../utils/context/Authcontext';
-import { useRouter } from 'next/navigation';
-export default function Dashboard() {
-    const router = useRouter();
+interface DashboardStats {
+  totalDoctors: number;
+  activeDoctors: number;
+  totalAppointments: number;
+  pendingAppointments: number;
+}
+
+const DashboardPage = () => {
+  const [stats, setStats] = useState<DashboardStats>({
+    totalDoctors: 0,
+    activeDoctors: 0,
+    totalAppointments: 0,
+    pendingAppointments: 0,
+  });
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    fetchDashboardStats();
+  }, []);
+
+  const fetchDashboardStats = async () => {
+    try {
+      const [doctorsResponse, appointmentsResponse] = await Promise.all([
+        fetch("http://localhost:5000/api/doctors"),
+        fetch("http://localhost:5000/api/appointments"),
+      ]);
+
+      if (!doctorsResponse.ok || !appointmentsResponse.ok) {
+        throw new Error("Failed to fetch dashboard data");
+      }
+
+      const doctors = await doctorsResponse.json();
+      const appointments = await appointmentsResponse.json();
+
+      const doctorsWithStatus = await Promise.all(
+              doctors.doctors.map(async (doctor: any) => {
+                //   console.log("doctor--->", doctor);
+                try {
+                  const slotsResponse = await fetch(
+                    `http://localhost:5000/api/slots/${doctor.doctor_id}`
+                  );
+      
+                  const slots = await slotsResponse.json();
+                  // console.log("slots--->", slots);
+      
+                  if (!slots.success) {
+                    throw new Error("Failed to fetch slots");
+                  }
+                  return {
+                    ...doctor,
+                    status: slots.slots.length > 0 ? "active" : "inactive",
+                  };
+                } catch (error) {
+                  console.error(
+                    `Error fetching slots for doctor ${doctor.id}:`,
+                    error
+                  );
+                  return {
+                    ...doctor,
+                    status: "inactive",
+                  };
+                }
+              })
+            );
+
+
+            // console.log("---->",doctorsWithStatus);
+      setStats({
+        totalDoctors: doctors.doctors.length,
+        activeDoctors: doctorsWithStatus.filter((d: any) => d.status === "active").length,
+        totalAppointments: appointments.length,
+        pendingAppointments: appointments.filter((a: any) => a.status === "pending").length,
+      });
+      setError(null);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to fetch dashboard data");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className={styles.loadingContainer}>
+        <FaSpinner className={styles.spinner} />
+        <p>Loading dashboard...</p>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className={styles.errorContainer}>
+        <p className={styles.errorMessage}>{error}</p>
+      </div>
+    );
+  }
+
   return (
     <div className={styles.container}>
-      <div className={styles.header}>
-        <h1 className={styles.headerTitle}>Admin Dashboard</h1>
-        <p className={styles.headerSubtitle}>
-          Manage doctors, appointments and system settings from one central location.
-        </p>
-      </div>
-
-      <div className={styles.cardsContainer}>
-        <div className={styles.card} onClick={() => router.push('/dashboard/admin/addDoctors')}>
-          <div className={styles.iconContainer}>
-            <FaUserMd className={styles.icon} />
+      <h1 className={styles.title}>Dashboard Overview</h1>
+      <div className={styles.statsGrid}>
+        <div className={styles.statCard}>
+          <div className={styles.statIcon}>
+            <FaUserMd />
           </div>
-          <h3 className={styles.cardTitle}>Add Doctor</h3>
-          <p className={styles.cardDescription}>
-            Add new healthcare providers to the system with their specialties and availability.
-          </p>
-        </div>
-
-        <div className={styles.card} onClick={() => router.push('/dashboard/admin/removeDoctors')}>
-          <div className={styles.iconContainer}>
-            <FaUserMinus className={styles.icon} />
+          <div className={styles.statInfo}>
+            <h3>Total Doctors</h3>
+            <p>{stats.totalDoctors}</p>
           </div>
-          <h3 className={styles.cardTitle}>Remove Doctor</h3>
-          <p className={styles.cardDescription}>
-            Remove healthcare providers who are no longer associated with the platform.
-          </p>
         </div>
 
-        <div className={styles.card} onClick={() => router.push('/dashboard/admin/slotsApproval')}>
-          <div className={styles.iconContainer}>
-            <FaCheckCircle className={styles.icon} />
+        <div className={styles.statCard}>
+          <div className={`${styles.statIcon} ${styles.active}`}>
+            <FaUserMd />
           </div>
-          <h3 className={styles.cardTitle}>Slots Approval</h3>
-          <p className={styles.cardDescription}>
-            Review and approve new appointment and registration requests from providers.
-          </p>
-        </div>
-      </div>
-
-      <div className={styles.statsContainer}>
-        <div className={styles.statsCard}>
-          <p className={styles.statsTitle}>Total Doctors</p>
-          <p className={styles.statsNumber}>12</p>
+          <div className={styles.statInfo}>
+            <h3>Active Doctors</h3>
+            <p>{stats.activeDoctors}</p>
+          </div>
         </div>
 
-        <div className={styles.statsCard}>
-          <p className={styles.statsTitle}>Active Users</p>
-          <p className={styles.statsNumber}>13</p>
+        <div className={styles.statCard}>
+          <div className={`${styles.statIcon} ${styles.appointments}`}>
+            <FaCalendarCheck />
+          </div>
+          <div className={styles.statInfo}>
+            <h3>Total Appointments</h3>
+            <p>{stats.totalAppointments}</p>
+          </div>
+        </div>
+
+        <div className={styles.statCard}>
+          <div className={`${styles.statIcon} ${styles.pending}`}>
+            <FaCalendarTimes />
+          </div>
+          <div className={styles.statInfo}>
+            <h3>Pending Approvals</h3>
+            <p>{stats.pendingAppointments}</p>
+          </div>
         </div>
       </div>
     </div>
   );
-}
+};
+
+export default DashboardPage;

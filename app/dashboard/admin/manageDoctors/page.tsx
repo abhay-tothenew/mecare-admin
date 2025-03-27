@@ -115,13 +115,22 @@ const RemoveDoctors = () => {
   }
 
   const handleEdit = (doctor_id: string) => {
+    console.log("---",doctor_id)
     redirect(`/dashboard/admin/editDoctor/${doctor_id}`);
   };
 
   //   console.log("doctors--->", doctors[0].doctor_id);
   return (
     <div className={styles.container}>
-      <h1 className={styles.title}>Manage Doctors</h1>
+      <div className={styles.header}>
+        <h1 className={styles.title}>Manage Doctors</h1>
+        <button 
+          onClick={() => router.push("/dashboard/admin/addDoctors")} 
+          className={styles.addDoctorButton}
+        >
+          Add Doctor
+        </button>
+      </div>
       <div className={styles.tableContainer}>
         <table className={styles.table}>
           <thead>

@@ -22,39 +22,39 @@ const EditDoctorForm = ({ doctor }: EditDoctorFormProps) => {
   });
 
   const handleSubmit = async () => {
+    console.log("--", doctor.doctor_id);
     const response = await fetch(
-        `http://localhost:5000/api/doctors/${doctor.doctor_id}`,
-        {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${user?.token}`,
-          },
-          body: JSON.stringify({
-            name: formData.name,
-            specialization: formData.specialization,
-            qualification: formData.qualification,
-            experience: parseInt(formData.experience),
-            location: formData.location,
-            phone: formData.phone,
-            email: formData.email,
-          }),
-        }
-      );
-
-      const data = await response.json();
-      console.log("data---",data)
-
-      if (!response.ok) {
-        throw new Error(data.message || "Failed to update doctor details");
+      `http://localhost:5000/api/doctors/${doctor.doctor_id}`,
+      {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${user?.token}`,
+        },
+        body: JSON.stringify({
+          name: formData.name,
+          specialization: formData.specialization,
+          qualification: formData.qualification,
+          experience: parseInt(formData.experience),
+          location: formData.location,
+          phone: formData.phone,
+          email: formData.email,
+        }),
       }
+    );
 
-      setShowSuccessModal(true);
-      
-      // Wait for 3 seconds before redirecting
-      setTimeout(() => {
-        router.push("/dashboard/admin/removeDoctors");
-      }, 3000);
+    const data = await response.json();
+    console.log("data---", data);
+
+    if (!data.success) {
+      throw new Error(data.message || "Failed to update doctors");
+    }
+
+    setShowSuccessModal(true);
+
+    setTimeout(() => {
+      router.push("/dashboard/admin/manageDoctors");
+    }, 3000);
   };
 
   const handleChange = (

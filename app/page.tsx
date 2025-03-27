@@ -8,8 +8,14 @@ import styles from "./page.module.css";
 export default function Home() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const { login } = useAuth();
+  const { login,user} = useAuth();
   const router = useRouter();
+
+  useEffect(() => {
+    if (user) {
+      router.push("/dashboard/admin");
+    }
+  }, [user,]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
