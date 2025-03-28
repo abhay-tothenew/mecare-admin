@@ -22,7 +22,7 @@ const EditDoctorForm = ({ doctor }: EditDoctorFormProps) => {
   });
 
   const handleSubmit = async () => {
-    console.log("--", doctor.doctor_id);
+    // console.log("--", doctor.doctor_id);
     const response = await fetch(
       `http://localhost:5000/api/doctors/${doctor.doctor_id}`,
       {
@@ -44,7 +44,7 @@ const EditDoctorForm = ({ doctor }: EditDoctorFormProps) => {
     );
 
     const data = await response.json();
-    console.log("data---", data);
+    // console.log("data---", data);
 
     if (!data.success) {
       throw new Error(data.message || "Failed to update doctors");

@@ -18,7 +18,7 @@ const AddDoctors = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("formdata--->", user);
+    // console.log("formdata--->", user);
     const req_body = {
       name: formData.name,
       specialization: formData.specialization,
@@ -29,8 +29,8 @@ const AddDoctors = () => {
       email: formData.email,
     };
 
-    console.log("req_body--->", req_body);
-    
+    // console.log("req_body--->", req_body);
+
     try {
       const response = await fetch("http:localhost:5000/api/doctors", {
         method: "POST",
@@ -46,12 +46,12 @@ const AddDoctors = () => {
           experience: formData.experience,
           location: formData.location,
           phone: formData.phone,
-          email: formData.email
+          email: formData.email,
         }),
       });
 
       const data = await response.json();
-      console.log("data--->", data);
+      // console.log("data--->", data);
 
       if (!data.success) {
         throw new Error("Invalid Credentials");
@@ -114,10 +114,16 @@ const AddDoctors = () => {
             required
           >
             <option value="">Select Specialization</option>
-            <option value="cardiology">Cardiology</option>
-            <option value="neurology">Neurology</option>
-            <option value="orthopedics">Orthopedics</option>
-            <option value="pediatrics">Pediatrics</option>
+            <option value="General Physician">General Physician</option>
+            <option value="Cardiologist">Cardiologist</option>
+            <option value="Neurologist">Neurologist</option>
+            <option value="Orthopedic Surgeon">Orthopedic Surgeon</option>
+            <option value="Pediatrician">Pediatrician</option>
+            <option value="Psychiatrist">Psychiatrist</option>
+            <option value="Dermatologist">Dermatologist</option>
+            <option value="ENT Specialist">ENT Specialist</option>
+            <option value="Dentist">Dentist</option>
+            <option value="Diabetologist">Diabetologist</option>
           </select>
         </div>
 
@@ -167,20 +173,6 @@ const AddDoctors = () => {
             required
           />
         </div>
-
-        {/* TODO: Use cloudinary for image upload */}
-
-        {/* <div className={styles.formGroup}>
-          <label htmlFor="image">Profile Image</label>
-          <input
-            type="file"
-            id="image"
-            name="image"
-            accept="image/*"
-            onChange={handleImageChange}
-            required
-          />
-        </div> */}
 
         <button type="submit" className={styles.submitButton}>
           Add Doctor
