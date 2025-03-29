@@ -8,6 +8,8 @@ interface DashboardStats {
   activeDoctors: number;
   totalAppointments: number;
   pendingAppointments: number;
+  completedAppointments: number;
+  cancelledAppointments: number;
 }
 
 const DashboardPage = () => {
@@ -16,6 +18,8 @@ const DashboardPage = () => {
     activeDoctors: 0,
     totalAppointments: 0,
     pendingAppointments: 0,
+    completedAppointments: 0,
+    cancelledAppointments: 0,
   });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -76,6 +80,8 @@ const DashboardPage = () => {
         activeDoctors: doctorsWithStatus.filter((d: any) => d.status === "active").length,
         totalAppointments: appointments.length,
         pendingAppointments: appointments.filter((a: any) => a.status === "pending").length,
+        completedAppointments: appointments.filter((a: any) => a.status === "completed").length,
+        cancelledAppointments: appointments.filter((a: any) => a.status === "cancelled").length,
       });
       setError(null);
     } catch (err) {
@@ -143,6 +149,26 @@ const DashboardPage = () => {
           <div className={styles.statInfo}>
             <h3>Pending Approvals</h3>
             <p>{stats.pendingAppointments}</p>
+          </div>
+        </div>
+
+        <div className={styles.statCard}>
+          <div className={`${styles.statIcon} ${styles.completed}`}>
+            <FaCalendarCheck />
+          </div>
+          <div className={styles.statInfo}>
+            <h3>Completed Appointments</h3>
+            <p>{stats.completedAppointments}</p>
+          </div>
+        </div>
+
+        <div className={styles.statCard}>
+          <div className={`${styles.statIcon} ${styles.cancelled}`}>
+            <FaCalendarTimes />
+          </div>
+          <div className={styles.statInfo}>
+            <h3>Cancelled Appointments</h3>
+            <p>{stats.cancelledAppointments}</p>
           </div>
         </div>
       </div>

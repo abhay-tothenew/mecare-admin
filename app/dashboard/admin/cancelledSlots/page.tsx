@@ -6,7 +6,7 @@ import { useAuth } from "@/app/utils/context/Authcontext";
 import SuccessModal from "@/app/components/SuccessModal";
 import { FaSpinner } from "react-icons/fa";
 
-const ApprovedSlots = () => {
+const CancelledSlots = () => {
   const [slots, setSlots] = useState<TimeSlot[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -26,13 +26,13 @@ const ApprovedSlots = () => {
         }
         const appointments: Appointment[] = await appointmentsResponse.json();
 
-        // Filter only confirmed appointments
-        const confirmedAppointments = appointments.filter(
-          (appointment) => appointment.status === "confirmed"
+        // Filter only cancelled appointments
+        const cancelledAppointments = appointments.filter(
+          (appointment) => appointment.status === "cancelled"
         );
 
         const slotsWithDoctorDetails = await Promise.all(
-          confirmedAppointments.map(async (appointment) => {
+          cancelledAppointments.map(async (appointment) => {
             const doctorResponse = await fetch(
               `http://localhost:5000/api/doctors/${appointment.doctor_id}`
             );
@@ -52,7 +52,7 @@ const ApprovedSlots = () => {
               time: appointment.appointment_time,
               doctorName: doctor.doctor.name,
               patientName: appointment.patient_name || "Not specified",
-              status: appointment.status as "confirmed",
+              status: appointment.status as "cancelled",
             };
           })
         );
@@ -73,51 +73,11 @@ const ApprovedSlots = () => {
     fetchAppointments();
   }, []);
 
-  const handleComplete = async (id: string) => {
-    try {
-      setActionLoading(id);
-      const response = await fetch(
-        `http://localhost:5000/api/appointments/${id}`,
-        {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${user?.token}`,
-          },
-          body: JSON.stringify({
-            status: "completed",
-          }),
-        }
-      );
-
-      if (!response.ok) {
-        throw new Error("Failed to update appointment status");
-      }
-
-      // Remove the completed appointment from the list
-      setSlots(slots.filter((slot) => slot.id !== id));
-
-      setSuccessMessage("Appointment marked as completed successfully");
-
-      setTimeout(() => {
-        setActionLoading(null);
-      }, 3000);
-    } catch (error) {
-      console.log("error while completing appointment", error);
-      setError(
-        error instanceof Error
-          ? error.message
-          : "Failed to update appointment status"
-      );
-      setActionLoading(null);
-    }
-  };
-
   if (loading) {
     return (
       <div className={styles.loadingContainer}>
         <FaSpinner className={styles.spinner} />
-        <p>Loading confirmed appointments...</p>
+        <p>Loading cancelled appointments...</p>
       </div>
     );
   }
@@ -138,7 +98,7 @@ const ApprovedSlots = () => {
           onClose={() => setSuccessMessage(null)}
         />
       )}
-      <h1 className={styles.title}>Confirmed Appointments</h1>
+      <h1 className={styles.title}>Cancelled Appointments</h1>
       <div className={styles.slotsContainer}>
         {slots.map((slot) => (
           <div key={slot.id} className={styles.slotCard}>
@@ -159,21 +119,6 @@ const ApprovedSlots = () => {
                 {slot.status}
               </span>
             </div>
-            <div className={styles.slotActions}>
-              <button
-                onClick={() => handleComplete(slot.id)}
-                className={`${styles.actionButton} ${styles.approveButton} ${
-                  actionLoading === slot.id ? styles.processing : ""
-                }`}
-                disabled={actionLoading === slot.id}
-              >
-                {actionLoading === slot.id ? (
-                  <FaSpinner className={styles.buttonSpinner} />
-                ) : (
-                  "Mark as Completed"
-                )}
-              </button>
-            </div>
           </div>
         ))}
       </div>
@@ -181,4 +126,4 @@ const ApprovedSlots = () => {
   );
 };
 
-export default ApprovedSlots;
+export default CancelledSlots; 

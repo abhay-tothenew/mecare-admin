@@ -51,6 +51,16 @@
   color: #856404;
 }
 
+.statIcon.completed {
+  background-color: #d4edda;
+  color: #155724;
+}
+
+.statIcon.cancelled {
+  background-color: #f8d7da;
+  color: #721c24;
+}
+
 .statInfo h3 {
   margin: 0;
   font-size: 0.875rem;

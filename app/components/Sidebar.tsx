@@ -16,6 +16,8 @@ const Sidebar = () => {
     { path: '/dashboard/admin', label: 'Dashboard', icon: <FaHome /> },
     { path: '/dashboard/admin/manageDoctors', label: 'Manage Doctors', icon: <FaUserMd /> },
     { path: '/dashboard/admin/slotsApproval', label: 'Slots Approval', icon: <FaUserMd /> },
+    { path: '/dashboard/admin/approvedSlots', label: 'Confirmed', icon: <FaUserMd /> },
+    { path: '/dashboard/admin/cancelledSlots', label: 'Cancelled', icon: <FaUserMd /> },
   ];
 
   const handleLogout = () => {
