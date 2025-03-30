@@ -19,16 +19,7 @@ const AddDoctors = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     // console.log("formdata--->", user);
-    const req_body = {
-      name: formData.name,
-      specialization: formData.specialization,
-      qualification: formData.qualification,
-      experience: formData.experience,
-      location: formData.location,
-      phone: formData.phone,
-      email: formData.email,
-    };
-
+   
     // console.log("req_body--->", req_body);
 
     try {

@@ -96,6 +96,7 @@ const SlotsApproval = () => {
       }
 
       const data = await response.json();
+      console.log("data--->", data);
 
       setSlots(
         slots.map((slot) =>

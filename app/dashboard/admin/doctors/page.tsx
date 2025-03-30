@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import styles from "../../../styles/Doctors.module.css";
-import { FaUserMd, FaTrash, FaSpinner } from "react-icons/fa";
+import { FaSpinner } from "react-icons/fa";
 import SuccessModal from "@/app/components/SuccessModal";
 
 interface Doctor {

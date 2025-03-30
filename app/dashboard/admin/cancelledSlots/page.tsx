@@ -2,7 +2,6 @@
 import React, { useState, useEffect } from "react";
 import styles from "../../../styles/SlotsApproval.module.css";
 import { TimeSlot, Appointment, Doctor } from "../slotsApproval/type";
-import { useAuth } from "@/app/utils/context/Authcontext";
 import SuccessModal from "@/app/components/SuccessModal";
 import { FaSpinner } from "react-icons/fa";
 
@@ -10,9 +9,7 @@ const CancelledSlots = () => {
   const [slots, setSlots] = useState<TimeSlot[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [actionLoading, setActionLoading] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
-  const { user } = useAuth();
 
   useEffect(() => {
     const fetchAppointments = async () => {

@@ -58,6 +58,7 @@ const RemoveDoctors = () => {
       setDoctors(doctorsWithStatus);
       setLoading(false);
     } catch (error) {
+      console.log("error--->", error);
       setError("Failed to fetch doctors");
       setLoading(false);
     }
@@ -92,6 +93,7 @@ const RemoveDoctors = () => {
         location.reload();
       }, 3000);
     } catch (error) {
+      console.log("error--->", error);
       setError("Failed to delete doctor");
       setRemovingDoctorId(null);
     }

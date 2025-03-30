@@ -43,7 +43,13 @@ const DashboardPage = () => {
       const appointments = await appointmentsResponse.json();
 
       const doctorsWithStatus = await Promise.all(
-              doctors.doctors.map(async (doctor: any) => {
+              doctors.doctors.map(async (doctor: {
+                id: string;
+                name: string;
+                specialization: string;
+                email: string;  
+                doctor_id: string;
+              }) => {
                 //   console.log("doctor--->", doctor);
                 try {
                   const slotsResponse = await fetch(
@@ -74,14 +80,13 @@ const DashboardPage = () => {
             );
 
 
-            // console.log("---->",doctorsWithStatus);
       setStats({
         totalDoctors: doctors.doctors.length,
-        activeDoctors: doctorsWithStatus.filter((d: any) => d.status === "active").length,
+        activeDoctors: doctorsWithStatus.filter((d: { status: string; }) => d.status === "active").length,
         totalAppointments: appointments.length,
-        pendingAppointments: appointments.filter((a: any) => a.status === "pending").length,
-        completedAppointments: appointments.filter((a: any) => a.status === "completed").length,
-        cancelledAppointments: appointments.filter((a: any) => a.status === "cancelled").length,
+        pendingAppointments: appointments.filter((a: { status: string; }) => a.status === "pending").length,
+        completedAppointments: appointments.filter((a: { status: string; }) => a.status === "completed").length,
+        cancelledAppointments: appointments.filter((a: { status: string; }) => a.status === "cancelled").length,
       });
       setError(null);
     } catch (err) {
