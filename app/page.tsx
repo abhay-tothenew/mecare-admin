@@ -4,11 +4,13 @@ import { useState, useEffect } from "react";
 import { useAuth } from "./utils/context/Authcontext";
 import { useRouter } from "next/navigation";
 import styles from "./page.module.css";
+import { API_ENDPOINTS } from "./utils/config";
 
 export default function Home() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const { login,user} = useAuth();
+  const [isLoading, setIsLoading] = useState(false);
+  const { login, user } = useAuth();
   const router = useRouter();
 
   useEffect(() => {
@@ -19,10 +21,10 @@ export default function Home() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+    setIsLoading(true);
 
     try {
-      const response = await fetch("http://localhost:5000/api/admin/login", {
+      const response = await fetch(API_ENDPOINTS.LOGIN, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -50,6 +52,8 @@ export default function Home() {
       router.push("/dashboard/admin");
     } catch (error) {
       console.log("error while login", error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -66,6 +70,7 @@ export default function Home() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
+              disabled={isLoading}
             />
           </div>
           <div className={styles.formGroup}>
@@ -76,10 +81,16 @@ export default function Home() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
+              disabled={isLoading}
             />
           </div>
-          <button type="submit" className={styles.loginButton}>
-            Login
+          <button 
+            type="submit" 
+            className={styles.loginButton}
+            disabled={isLoading}
+          >
+            {isLoading && <span className={styles.loadingSpinner} />}
+            {isLoading ? 'Logging in...' : 'Login'}
           </button>
         </form>
       </main>

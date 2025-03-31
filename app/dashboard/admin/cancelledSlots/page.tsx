@@ -4,6 +4,7 @@ import styles from "../../../styles/SlotsApproval.module.css";
 import { TimeSlot, Appointment, Doctor } from "../slotsApproval/type";
 import SuccessModal from "@/app/components/SuccessModal";
 import { FaSpinner } from "react-icons/fa";
+import { API_ENDPOINTS } from "@/app/utils/config";
 
 const CancelledSlots = () => {
   const [slots, setSlots] = useState<TimeSlot[]>([]);
@@ -16,7 +17,7 @@ const CancelledSlots = () => {
       try {
         // Fetch appointments
         const appointmentsResponse = await fetch(
-          "http://localhost:5000/api/appointments"
+          API_ENDPOINTS.APPOINTMENTS
         );
         if (!appointmentsResponse.ok) {
           throw new Error("Failed to fetch appointments");
@@ -31,7 +32,7 @@ const CancelledSlots = () => {
         const slotsWithDoctorDetails = await Promise.all(
           cancelledAppointments.map(async (appointment) => {
             const doctorResponse = await fetch(
-              `http://localhost:5000/api/doctors/${appointment.doctor_id}`
+              API_ENDPOINTS.DOCTOR_BY_ID(appointment.doctor_id)
             );
             if (!doctorResponse.ok) {
               throw new Error("Failed to fetch doctor details");

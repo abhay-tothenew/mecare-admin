@@ -5,6 +5,7 @@ import { TimeSlot, Appointment, Doctor } from "./type";
 import { useAuth } from "@/app/utils/context/Authcontext";
 import SuccessModal from "@/app/components/SuccessModal";
 import { FaSpinner } from "react-icons/fa";
+import { API_ENDPOINTS } from "@/app/utils/config";
 
 const SlotsApproval = () => {
   const [slots, setSlots] = useState<TimeSlot[]>([]);
@@ -18,9 +19,7 @@ const SlotsApproval = () => {
     const fetchAppointments = async () => {
       try {
         // Fetch appointments
-        const appointmentsResponse = await fetch(
-          "http://localhost:5000/api/appointments"
-        );
+        const appointmentsResponse = await fetch(API_ENDPOINTS.APPOINTMENTS);
         if (!appointmentsResponse.ok) {
           throw new Error("Failed to fetch appointments");
         }
@@ -29,14 +28,13 @@ const SlotsApproval = () => {
         const slotsWithDoctorDetails = await Promise.all(
           appointments.map(async (appointment) => {
             const doctorResponse = await fetch(
-              `http://localhost:5000/api/doctors/${appointment.doctor_id}`
+              API_ENDPOINTS.DOCTOR_BY_ID(appointment.doctor_id)
             );
             if (!doctorResponse.ok) {
               throw new Error("Failed to fetch doctor details");
             }
             const doctor: Doctor = await doctorResponse.json();
 
-            // Format the date from ISO string to YYYY-MM-DD
             const formattedDate = new Date(appointment.appointment_date)
               .toISOString()
               .split("T")[0];
@@ -77,19 +75,16 @@ const SlotsApproval = () => {
   ) => {
     try {
       setActionLoading(id);
-      const response = await fetch(
-        `http://localhost:5000/api/appointments/${id}`,
-        {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${user?.token}`,
-          },
-          body: JSON.stringify({
-            status: newStatus,
-          }),
-        }
-      );
+      const response = await fetch(API_ENDPOINTS.APPOINTMENT_BY_ID(id), {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${user?.token}`,
+        },
+        body: JSON.stringify({
+          status: newStatus,
+        }),
+      });
 
       if (!response.ok) {
         throw new Error("Failed to update appointment status");

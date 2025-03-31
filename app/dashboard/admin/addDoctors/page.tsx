@@ -2,6 +2,7 @@
 import React, { useState } from "react";
 import styles from "../../../styles/AddDoctors.module.css";
 import { useAuth } from "@/app/utils/context/Authcontext";
+import { API_ENDPOINTS } from "@/app/utils/config";
 
 const AddDoctors = () => {
   const [formData, setFormData] = useState({
@@ -23,7 +24,7 @@ const AddDoctors = () => {
     // console.log("req_body--->", req_body);
 
     try {
-      const response = await fetch("http:localhost:5000/api/doctors", {
+      const response = await fetch(API_ENDPOINTS.DOCTORS, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

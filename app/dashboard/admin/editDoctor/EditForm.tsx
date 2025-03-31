@@ -6,6 +6,7 @@ import { useAuth } from "@/app/utils/context/Authcontext";
 import { useRouter } from "next/navigation";
 import SuccessModal from "@/app/components/SuccessModal";
 import { EditDoctorFormProps } from "./type";
+import { API_ENDPOINTS } from "@/app/utils/config";
 
 const EditDoctorForm = ({ doctor }: EditDoctorFormProps) => {
   const router = useRouter();
@@ -24,7 +25,7 @@ const EditDoctorForm = ({ doctor }: EditDoctorFormProps) => {
   const handleSubmit = async () => {
     // console.log("--", doctor.doctor_id);
     const response = await fetch(
-      `http://localhost:5000/api/doctors/${doctor.doctor_id}`,
+      API_ENDPOINTS.DOCTOR_BY_ID(doctor.doctor_id),
       {
         method: "PUT",
         headers: {

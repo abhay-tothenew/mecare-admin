@@ -1,3 +1,4 @@
+import { API_ENDPOINTS } from "@/app/utils/config";
 import EditDoctorForm from "../EditForm";
 
 export default async function EditDoctor({
@@ -8,7 +9,7 @@ export default async function EditDoctor({
   const { doctor_id } = await params;
 
   // Fetch doctor data
-  const response = await fetch(`http://localhost:5000/api/doctors/${doctor_id}`);
+  const response = await fetch(API_ENDPOINTS.DOCTOR_BY_ID(doctor_id));
   const data = await response.json();
 
   if (!data.success) {

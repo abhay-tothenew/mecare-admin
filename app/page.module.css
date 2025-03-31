@@ -219,3 +219,26 @@ a.secondary {
 .loginButton:hover {
   background-color: #2d6a4f;
 }
+
+.loginButton:disabled {
+  background-color: #1B4332;
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.loadingSpinner {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  border-top-color: white;
+  animation: spin 1s ease-in-out infinite;
+  margin-right: 8px;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}

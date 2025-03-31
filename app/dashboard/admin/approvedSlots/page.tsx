@@ -5,6 +5,7 @@ import { TimeSlot, Appointment, Doctor } from "../slotsApproval/type";
 import { useAuth } from "@/app/utils/context/Authcontext";
 import SuccessModal from "@/app/components/SuccessModal";
 import { FaSpinner } from "react-icons/fa";
+import { API_ENDPOINTS } from "@/app/utils/config";
 
 const ApprovedSlots = () => {
   const [slots, setSlots] = useState<TimeSlot[]>([]);
@@ -19,7 +20,7 @@ const ApprovedSlots = () => {
       try {
         // Fetch appointments
         const appointmentsResponse = await fetch(
-          "http://localhost:5000/api/appointments"
+          API_ENDPOINTS.APPOINTMENTS
         );
         if (!appointmentsResponse.ok) {
           throw new Error("Failed to fetch appointments");
@@ -34,7 +35,7 @@ const ApprovedSlots = () => {
         const slotsWithDoctorDetails = await Promise.all(
           confirmedAppointments.map(async (appointment) => {
             const doctorResponse = await fetch(
-              `http://localhost:5000/api/doctors/${appointment.doctor_id}`
+              API_ENDPOINTS.DOCTOR_BY_ID(appointment.doctor_id)
             );
             if (!doctorResponse.ok) {
               throw new Error("Failed to fetch doctor details");
@@ -77,7 +78,7 @@ const ApprovedSlots = () => {
     try {
       setActionLoading(id);
       const response = await fetch(
-        `http://localhost:5000/api/appointments/${id}`,
+        API_ENDPOINTS.APPOINTMENT_BY_ID(id),
         {
           method: "PUT",
           headers: {

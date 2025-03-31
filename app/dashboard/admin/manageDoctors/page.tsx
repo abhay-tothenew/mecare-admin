@@ -5,6 +5,7 @@ import { Doctor } from "./type";
 import SuccessModal from "@/app/components/SuccessModal";
 import { FaSpinner } from "react-icons/fa";
 import { redirect, useRouter } from "next/navigation";
+import { API_ENDPOINTS } from "@/app/utils/config";
 
 const RemoveDoctors = () => {
   const [doctors, setDoctors] = useState<Doctor[]>([]);
@@ -16,7 +17,7 @@ const RemoveDoctors = () => {
 
   const fetchDoctors = async () => {
     try {
-      const response = await fetch("http://localhost:5000/api/doctors");
+      const response = await fetch(API_ENDPOINTS.DOCTORS);
       if (!response.ok) {
         throw new Error("Failed to fetch doctors");
       }
@@ -29,7 +30,7 @@ const RemoveDoctors = () => {
           //   console.log("doctor--->", doctor);
           try {
             const slotsResponse = await fetch(
-              `http://localhost:5000/api/slots/${doctor.doctor_id}`
+              API_ENDPOINTS.SLOTS(doctor.doctor_id)
             );
 
             const slots = await slotsResponse.json();
@@ -71,7 +72,7 @@ const RemoveDoctors = () => {
   const handleRemove = async (id: string) => {
     setRemovingDoctorId(id);
     try {
-      const response = await fetch(`http://localhost:5000/api/doctors/${id}`, {
+      const response = await fetch(API_ENDPOINTS.DOCTOR_BY_ID(id), {
         method: "DELETE",
       });
 

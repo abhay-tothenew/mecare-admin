@@ -4,6 +4,7 @@ import React, { useState, useEffect } from "react";
 import styles from "../../../styles/Doctors.module.css";
 import { FaSpinner } from "react-icons/fa";
 import SuccessModal from "@/app/components/SuccessModal";
+import { API_ENDPOINTS } from "@/app/utils/config";
 
 interface Doctor {
   id: string;
@@ -26,7 +27,7 @@ const DoctorsPage = () => {
 
   const fetchDoctors = async () => {
     try {
-      const response = await fetch("http://localhost:5000/api/doctors");
+      const response = await fetch(API_ENDPOINTS.DOCTORS);
       if (!response.ok) {
         throw new Error("Failed to fetch doctors");
       }
@@ -43,7 +44,7 @@ const DoctorsPage = () => {
   const handleStatusChange = async (doctorId: string, newStatus: "active" | "inactive") => {
     try {
       setActionLoading(doctorId);
-      const response = await fetch(`http://localhost:5000/api/doctors/${doctorId}`, {
+      const response = await fetch(API_ENDPOINTS.DOCTOR_BY_ID(doctorId), {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",

@@ -1,7 +1,13 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import styles from "@/app/styles/Dashboard.module.css";
-import { FaSpinner, FaUserMd, FaCalendarCheck, FaCalendarTimes } from "react-icons/fa";
+import {
+  FaSpinner,
+  FaUserMd,
+  FaCalendarCheck,
+  FaCalendarTimes,
+} from "react-icons/fa";
+import { API_ENDPOINTS } from "@/app/utils/config";
 
 interface DashboardStats {
   totalDoctors: number;
@@ -31,8 +37,8 @@ const DashboardPage = () => {
   const fetchDashboardStats = async () => {
     try {
       const [doctorsResponse, appointmentsResponse] = await Promise.all([
-        fetch("http://localhost:5000/api/doctors"),
-        fetch("http://localhost:5000/api/appointments"),
+        fetch(API_ENDPOINTS.DOCTORS),
+        fetch(API_ENDPOINTS.APPOINTMENTS),
       ]);
 
       if (!doctorsResponse.ok || !appointmentsResponse.ok) {
@@ -43,54 +49,65 @@ const DashboardPage = () => {
       const appointments = await appointmentsResponse.json();
 
       const doctorsWithStatus = await Promise.all(
-              doctors.doctors.map(async (doctor: {
-                id: string;
-                name: string;
-                specialization: string;
-                email: string;  
-                doctor_id: string;
-              }) => {
-                //   console.log("doctor--->", doctor);
-                try {
-                  const slotsResponse = await fetch(
-                    `http://localhost:5000/api/slots/${doctor.doctor_id}`
-                  );
-      
-                  const slots = await slotsResponse.json();
-                  // console.log("slots--->", slots);
-      
-                  if (!slots.success) {
-                    throw new Error("Failed to fetch slots");
-                  }
-                  return {
-                    ...doctor,
-                    status: slots.slots.length > 0 ? "active" : "inactive",
-                  };
-                } catch (error) {
-                  console.error(
-                    `Error fetching slots for doctor ${doctor.id}:`,
-                    error
-                  );
-                  return {
-                    ...doctor,
-                    status: "inactive",
-                  };
-                }
-              })
-            );
+        doctors.doctors.map(
+          async (doctor: {
+            id: string;
+            name: string;
+            specialization: string;
+            email: string;
+            doctor_id: string;
+          }) => {
+            //   console.log("doctor--->", doctor);
+            try {
+              const slotsResponse = await fetch(
+                API_ENDPOINTS.SLOTS(doctor.doctor_id)
+              );
 
+              const slots = await slotsResponse.json();
+              // console.log("slots--->", slots);
+
+              if (!slots.success) {
+                throw new Error("Failed to fetch slots");
+              }
+              return {
+                ...doctor,
+                status: slots.slots.length > 0 ? "active" : "inactive",
+              };
+            } catch (error) {
+              console.error(
+                `Error fetching slots for doctor ${doctor.id}:`,
+                error
+              );
+              return {
+                ...doctor,
+                status: "inactive",
+              };
+            }
+          }
+        )
+      );
 
       setStats({
         totalDoctors: doctors.doctors.length,
-        activeDoctors: doctorsWithStatus.filter((d: { status: string; }) => d.status === "active").length,
+        activeDoctors: doctorsWithStatus.filter(
+          (d: { status: string }) => d.status === "active"
+        ).length,
         totalAppointments: appointments.length,
-        pendingAppointments: appointments.filter((a: { status: string; }) => a.status === "pending").length,
-        completedAppointments: appointments.filter((a: { status: string; }) => a.status === "completed").length,
-        cancelledAppointments: appointments.filter((a: { status: string; }) => a.status === "cancelled").length,
+        pendingAppointments: appointments.filter(
+          (a: { status: string }) => a.status === "pending"
+        ).length,
+        completedAppointments: appointments.filter(
+          (a: { status: string }) => a.status === "completed"
+        ).length,
+        cancelledAppointments: appointments.filter(
+          (a: { status: string }) => a.status === "cancelled"
+        ).length,
       });
       setError(null);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to fetch dashboard data");
+      setError(
+        err instanceof Error ? err.message : "Failed to fetch dashboard data"
+      );
     } finally {
       setLoading(false);
     }
